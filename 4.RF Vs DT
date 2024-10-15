@@ -1,0 +1,47 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+
+# Step 1: Load the dataset
+data = pd.read_csv('your_dataset.csv')  # Replace 'your_dataset.csv' with the actual file path
+
+# Step 2: Preprocess the data
+# (You may need to handle missing values, convert categorical variables, etc.)
+
+# Step 3: Split the data into training and testing sets
+X = data[['Engine Size(L)', 'Cylinders', 'Fuel Consumption City (L/100 km)', 'Fuel Consumption Hwy (L/100 km)', 'Fuel Consumption Comb (L/100 km)']]
+y = data['CO2 Emissions(g/km)']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 4: Train a Random Forest model
+random_forest_model = RandomForestRegressor(n_estimators=100, random_state=42)
+random_forest_model.fit(X_train, y_train)
+rf_predictions = random_forest_model.predict(X_test)
+rf_accuracy = 100 - (mean_squared_error(y_test, rf_predictions) ** 0.5)
+
+# Step 5: Train an Artificial Neural Network (ANN) model
+ann_model = MLPRegressor(hidden_layer_sizes=(100, 100), max_iter=500, random_state=42)
+ann_model.fit(X_train, y_train)
+ann_predictions = ann_model.predict(X_test)
+ann_accuracy = 100 - (mean_squared_error(y_test, ann_predictions) ** 0.5)
+
+# Step 6: Evaluate the models and calculate their accuracies
+print(f"Accuracy of Random Forest: {rf_accuracy:.2f}%")
+print(f"Accuracy of ANN: {ann_accuracy:.2f}%")
+
+# Step 7: Compare the accuracies
+if rf_accuracy > ann_accuracy:
+    print("Random Forest has a higher accuracy compared to ANN.")
+else:
+    print("ANN has a higher accuracy compared to Random Forest.")
+
+# Step 8: Create graphs to visualize the results
+plt.scatter(y_test, rf_predictions, label='Random Forest', alpha=0.5)
+plt.scatter(y_test, ann_predictions, label='ANN', alpha=0.5)
+plt.xlabel('Actual CO2 Emissions(g/km)')
+plt.ylabel('Predicted CO2 Emissions(g/km)')
+plt.legend()
+plt.show()
